@@ -14,12 +14,14 @@ import java.util.List;
 /**
  * Created by LaunchCode
  */
-public class JobData {
+public class JobData
+{
 
     private static final String DATA_FILE = "resources/job_data.csv";
     private static Boolean isDataLoaded = false;
-
     private static ArrayList<HashMap<String, String>> allJobs;
+
+
 
     /**
      * Fetch list of all values from loaded data,
@@ -28,31 +30,58 @@ public class JobData {
      * @param field The column to retrieve values from
      * @return List of all of the values of the given field
      */
-    public static ArrayList<String> findAll(String field) {
-
+    //================================================================================================//
+    //==================================== PUBLIC FIND-ALL  ==========================================//
+    //================================================================================================//
+    public static ArrayList<String> findAll(String field)
+    {
         // load data, if not already loaded
         loadData();
 
         ArrayList<String> values = new ArrayList<>();
-
-        for (HashMap<String, String> row : allJobs) {
+        for (HashMap<String, String> row : allJobs)
+        {
             String aValue = row.get(field);
 
-            if (!values.contains(aValue)) {
+            if (!values.contains(aValue))
+            {
                 values.add(aValue);
             }
         }
-
         return values;
     }
 
-    public static ArrayList<HashMap<String, String>> findAll() {
-
+    public static ArrayList<HashMap<String, String>> findAll()
+    {
         // load data, if not already loaded
         loadData();
-
         return allJobs;
     }
+
+    //////////////////////////// FIND BY VALUE /////////////////////////////////
+    public static ArrayList<HashMap<String, String>> findByValue(String value)
+    {
+        loadData();
+        ArrayList<HashMap<String, String>> jobs = new ArrayList<>();
+
+        for ( HashMap<String, String> row: allJobs)
+        {
+            for (String jobName: row.keySet())
+            {
+                if(row.get(jobName).toUpperCase().contains(value))
+                {
+                    //if(!jobs.contains(value))
+                    //{
+                        jobs.add(row);
+                        if(jobs == jobs)
+                            break;
+                    //}
+                }
+            }
+        }
+        return jobs;
+    }
+/////////////////////////////////////////////////////////////
 
     /**
      * Returns results of search the jobs data by key/value, using
@@ -65,37 +94,38 @@ public class JobData {
      * @param value Value of teh field to search for
      * @return List of all jobs matching the criteria
      */
-    public static ArrayList<HashMap<String, String>> findByColumnAndValue(String column, String value) {
 
+    //================================================================================================//
+    //==================================== PUBLIC FIND-BY-COLUMN-AND-VALUE ===========================//
+    //================================================================================================//
+
+    public static ArrayList<HashMap<String, String>> findByColumnAndValue(String column, String value)
+    {
         // load data, if not already loaded
         loadData();
-
         ArrayList<HashMap<String, String>> jobs = new ArrayList<>();
 
-        for (HashMap<String, String> row : allJobs) {
-
+        for (HashMap<String, String> row : allJobs)
+        {
             String aValue = row.get(column);
-
-            if (aValue.contains(value)) {
-                jobs.add(row);
-            }
+            if (aValue.toUpperCase().contains(value))
+            { jobs.add(row); }
         }
-
         return jobs;
     }
 
     /**
      * Read in data from a CSV file and store it in a list
      */
-    private static void loadData() {
-
+    private static void loadData()
+    {
         // Only load data once
-        if (isDataLoaded) {
+        if (isDataLoaded)
+        {
             return;
         }
-
-        try {
-
+        try
+        {
             // Open the CSV file and set up pull out column header info and records
             Reader in = new FileReader(DATA_FILE);
             CSVParser parser = CSVFormat.RFC4180.withFirstRecordAsHeader().parse(in);
@@ -106,23 +136,24 @@ public class JobData {
             allJobs = new ArrayList<>();
 
             // Put the records into a more friendly format
-            for (CSVRecord record : records) {
+            for (CSVRecord record : records)
+            {
                 HashMap<String, String> newJob = new HashMap<>();
 
-                for (String headerLabel : headers) {
+                for (String headerLabel : headers)
+                {
                     newJob.put(headerLabel, record.get(headerLabel));
                 }
 
                 allJobs.add(newJob);
             }
-
             // flag the data as loaded, so we don't do it twice
             isDataLoaded = true;
-
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             System.out.println("Failed to load job data");
             e.printStackTrace();
         }
     }
-
 }
